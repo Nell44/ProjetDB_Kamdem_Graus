@@ -40,13 +40,15 @@ Gestion des œuvres (films & séries)
 
 - Une œuvre peut être soit un film, soit une série coréenne.
 - Chaque œuvre possède un titre, une date de sortie et un résumé.
-- Une série est composée de plusieurs épisodes.
+- Une série est composée de un ou plusieurs épisodes.
 - Un épisode appartient à une seule série.
 - Chaque épisode possède un numéro et une durée.
 - Une œuvre peut être associée à plusieurs genres.
 - Une œuvre peut avoir plusieurs extraits vidéo.
 - Un extrait vidéo est toujours rattaché à une seule œuvre.
 - Un extrait peut être classé comme “tendance” ou “nostalgique”.
+- Si type_oeuvre = "Film" → l'œuvre ne possède pas d’épisodes.
+- Si type_oeuvre = "Série" → l’attribut duree_film est nul.
 
 Gestion des acteurs
 
