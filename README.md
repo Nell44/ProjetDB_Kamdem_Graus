@@ -151,17 +151,17 @@ CREATE TABLE OEUVRE(
    PRIMARY KEY(id_oeuvre),
    FOREIGN KEY(id_oeuvre_Oeuvre_originale) REFERENCES OEUVRE(id_oeuvre)
 );
-
+ 
 CREATE TABLE EPISODE(
    id_oeuvre INT,
-   id_episode INT,
+   id_episode INT, 
    numero_episode INT,
    titre_episode VARCHAR(150),
    duree_episode INT,
    PRIMARY KEY(id_oeuvre, id_episode),
    FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre) ON DELETE CASCADE
 );
-
+ 
 CREATE TABLE ACTEUR(
    id_acteur INT,
    nom_acteur VARCHAR(100),
@@ -169,7 +169,7 @@ CREATE TABLE ACTEUR(
    biographie VARCHAR(3000),
    PRIMARY KEY(id_acteur)
 );
-
+ 
 CREATE TABLE MUSIQUE(
    id_musique INT,
    titre_musique VARCHAR(150),
@@ -177,9 +177,9 @@ CREATE TABLE MUSIQUE(
    duree_musique INT,
    id_oeuvre INT NOT NULL,
    PRIMARY KEY(id_musique),
-   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre)
+   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre) ON DELETE CASCADE
 );
-
+ 
 CREATE TABLE UTILISATEUR(
    id_utilisateur INT,
    pseudonyme VARCHAR(50),
@@ -188,7 +188,7 @@ CREATE TABLE UTILISATEUR(
    date_inscription DATE,
    PRIMARY KEY(id_utilisateur)
 );
-
+ 
 CREATE TABLE PLAYLIST(
    id_playlist INT,
    nom_playlist VARCHAR(100),
@@ -197,7 +197,7 @@ CREATE TABLE PLAYLIST(
    PRIMARY KEY(id_playlist),
    FOREIGN KEY(id_utilisateur) REFERENCES UTILISATEUR(id_utilisateur) ON DELETE SET NULL
 );
-
+ 
 CREATE TABLE EXTRAIT(
    id_extrait INT,
    type_extrait VARCHAR(20),
@@ -205,40 +205,40 @@ CREATE TABLE EXTRAIT(
    date_publication DATE,
    id_oeuvre INT NOT NULL,
    PRIMARY KEY(id_extrait),
-   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre)
+   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre) ON DELETE CASCADE
 );
-
+ 
 CREATE TABLE GENRE(
    id_genre INT,
    nom_genre VARCHAR(50),
    PRIMARY KEY(id_genre)
 );
-
+ 
 CREATE TABLE JOUER(
    id_oeuvre INT,
    id_acteur INT,
    nom_role VARCHAR(150),
    PRIMARY KEY(id_oeuvre, id_acteur),
-   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre) ON DELETE CASCADE,
-   FOREIGN KEY(id_acteur) REFERENCES ACTEUR(id_acteur) ON DELETE CASCADE
+   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre)ON DELETE CASCADE,
+   FOREIGN KEY(id_acteur) REFERENCES ACTEUR(id_acteur)ON DELETE CASCADE
 );
-
+ 
 CREATE TABLE AJOUTER(
    id_musique INT,
    id_playlist INT,
    PRIMARY KEY(id_musique, id_playlist),
-   FOREIGN KEY(id_musique) REFERENCES MUSIQUE(id_musique) ON DELETE CASCADE,
-   FOREIGN KEY(id_playlist) REFERENCES PLAYLIST(id_playlist) ON DELETE CASCADE
+   FOREIGN KEY(id_musique) REFERENCES MUSIQUE(id_musique)ON DELETE CASCADE,
+   FOREIGN KEY(id_playlist) REFERENCES PLAYLIST(id_playlist)ON DELETE CASCADE
 );
-
+ 
 CREATE TABLE CLASSER(
    id_oeuvre INT,
    id_genre INT,
    PRIMARY KEY(id_oeuvre, id_genre),
-   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre) ON DELETE CASCADE,
-   FOREIGN KEY(id_genre) REFERENCES GENRE(id_genre) ON DELETE CASCADE
+   FOREIGN KEY(id_oeuvre) REFERENCES OEUVRE(id_oeuvre)ON DELETE CASCADE,
+   FOREIGN KEY(id_genre) REFERENCES GENRE(id_genre)ON DELETE CASCADE
 );
-
+ 
 CREATE TABLE NOTER_PRESTATION(
    id_oeuvre INT,
    id_acteur INT,
@@ -275,3 +275,23 @@ CHECK (nombre_vues >= 0);
 ALTER TABLE GENRE ADD CONSTRAINT chk_nom_genre 
 CHECK (nom_genre IN ('Romance', 'Action', 'Thriller', 'Comédie', 'Historique', 'Fantastique'));
 ```
+
+##
+## Scénarios d'utilisation
+
+La base de données K-MusicDrama est interrogée à travers trois scénarios d'utilisation, chacun correspondant à un profil d'utilisateur différent.
+
+### Scénario 1 — Lucas, Modérateur de la plateforme
+Lucas est chargé de surveiller la qualité des données et des interactions des utilisateurs sur K-MusicDrama. Il a besoin de consulter régulièrement les comptes actifs, les notes attribuées par les utilisateurs et les playlists créées. Il cherche notamment à identifier les utilisateurs les plus engagés, les acteurs qui n'ont encore reçu aucune évaluation, et à vérifier que les interactions enregistrées dans la base sont cohérentes et complètes.
+
+### Scénario 2 — Lena, Fan avancée
+Lena est une grande fan de K-Dramas qui utilise la plateforme pour découvrir de nouveaux contenus. Elle navigue dans le catalogue en filtrant les œuvres selon ses genres préférés (Romance, Fantastique), consulte les OST disponibles pour chaque série ou film, et explore les playlists publiques créées par d'autres fans pour trouver de nouvelles musiques. Elle cherche à tirer le meilleur parti des fonctionnalités de découverte offertes par la plateforme.
+
+### Scénario 3 — Emma, Responsable des contenus
+Emma gère le catalogue éditorial de K-MusicDrama. Elle vérifie régulièrement quelles œuvres disposent d'épisodes enregistrés, lesquelles ont des OST associées, et surtout lesquelles manquent encore d'extraits vidéo. Son objectif est d'identifier les contenus incomplets afin de les compléter en priorité, et d'analyser les caractéristiques générales du catalogue pour orienter les futures acquisitions.
+
+
+##
+## Justification de la 3ème Forme Normale (3FN)
+
+Notre base de données respecte la troisième forme normale. Dans chacune de nos tables, tous les attributs dépendent directement et uniquement de la clé primaire — il n'existe aucune dépendance transitive entre les attributs. Par exemple, dans la table MUSIQUE, les attributs titre_musique, artiste et duree_musique dépendent uniquement de id_musique. On aurait pu stocker le titre de l'œuvre directement dans cette table, mais cela aurait créé une redondance inutile : on garde donc uniquement la clé étrangère id_oeuvre, et le titre est retrouvé via une jointure. Ce principe est appliqué de façon cohérente dans l'ensemble du schéma, ce qui garantit l'intégrité des données et évite toute anomalie lors des insertions, modifications ou suppressions.
